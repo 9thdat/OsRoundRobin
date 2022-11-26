@@ -83,9 +83,12 @@ void bubbleSort(P pro[], int n){
 
 
 void RoundRobin(P pro[], int n, int q){
-    int que[15];
-    int count = n;
+    P que[15]; //Hang doi cap CPU
+    P suc[15]; //Cac tien trinh qua hoan thanh
+    int countS = 0; //Bien dem cac tien trinh da hoan thanh
+    int countQ = 0; //Bien dem cac tien trinh co trong hang doi
 
+    //Xu ly tien trinh thu nhat pro[0]
     pro[0].sta = pro[0].arr;
     time = pro[0].arr;
     if (pro[0].bur > q){
@@ -98,8 +101,83 @@ void RoundRobin(P pro[], int n, int q){
         time += pro[0].bur;
         pro[0].fin = pro[0].bur;
         pro[0].bur = 0;
-        pro[0].wt
+        pro[0].wt = 0;
+        suc[0] = pro[0];
+        countS++;
+        for(int i = 0; i < n - 1; i++){
+            pro[i] = pro[i + 1];
+        }
+        n--;
     }
+
+    for (int i = 1; i < n; i++){ //Kiem tra tien trinh co phu hop de vao hang doi khong
+        if (pro[i].arr <= q)
+        {
+            que[countQ] = pro[i];
+            for(int m = i; m < n - 1; m++)
+            {
+                pro[m] = pro[m + 1];
+            }
+            i--;
+            n--;
+            countQ++;
+        }
+    }
+
+    int count = n; //Bien dem cac tien trinh can xu ly
+
+    for (int i = 0; i < countQ; i++){ //Them Waiting time va Turnaround time cho cac tien trinh trong hang cho
+        que[i].wt = q - que[i].arr;
+        que[i].tat = q - que[i].arr;
+    }
+
+    if (pro[0].bur != 0){ //Kiem tra xem tien trinh pro[0] co duoc vao hang doi khong
+        que[countQ] = pro[0];
+        countQ++;
+    }
+
+    while(countS != count){     
+        //Xu ly tien trinh o dau hang cho  
+        que[0].sta = time;
+
+        if (que[0].bur > q){
+            que[0].tat += q;
+            que[0].bur -= q;
+            time += q;
+        }
+        else{
+            que[0].tat += que[0].bur;
+            time += pro[0].bur;
+            que[0].fin = que[0].tat + que[0].sta;
+            pro[0].bur = 0;
+            suc[countS] = que[0];
+            countS++;
+            for(int i = 0; i < countQ - 1; i++){
+                que[i] = que[i + 1];
+            }
+            countQ--;
+        }
+
+        for (int i = 0; i < n; i++){ //Kiem tra tien trinh co phu hop de vao hang doi khong
+            if (pro[i].arr <= q){
+                que[countQ] = pro[i];
+                for(int m = i; m < n - 1; m++){
+                    pro[m] = pro[m + 1];
+                }
+                n--;
+                i--;
+                countQ++;
+            } 
+        }
+
+        if (que[0].bur != 0){ // Kiem tra xem tien trinh vua duoc cap CPU co duoc dua ra sau hang doi khong
+            que[countQ] == que[0];
+            countQ++;
+            for (int i = 0; i < countQ - 1; i++){
+                que[i] = que[i + 1];
+            }
+            countQ--;
+        }
 }
 
 void Output(P pro[], int n){
