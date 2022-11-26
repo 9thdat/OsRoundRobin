@@ -3,13 +3,13 @@
 using namespace std;
 
 struct Process{
-    int stt; // So thu tu cac tien trinh
-    int arr; // Arrival time
-    int bur; // Burst time
-    int sta; // Start time
-    int att; // Turnaround time
-    int fin; // Finish time
-    int end; // End time
+    int stt = -1; // So thu tu cac tien trinh
+    int arr = 0; // Arrival time
+    int bur = 0; // Burst time
+    int sta = 0; // Start time
+    int tat = 0; // Turnaround time
+    int wt = 0;
+    int fin = 0; // Finish time
 }typedef P;
 
 int n, q; //n la so luong tien trinh, q la quantum time
@@ -52,16 +52,11 @@ void Input(P pro[], int n){
     {
         pro[i].stt = i + 1;
         cout << "\nNhap vao tien trinh thu " << pro[i].stt << " : ";
-        cout << "Nhap vao Arrival time: ";
+        cout << "\nNhap vao Arrival time: ";
         cin >> pro[i].arr;
         cout << "\nNhap vao Burst time: ";
         cin >> pro[i].bur;
     }
-}
-
-void RoundRobin(P pro[], int n, int q){
-    int que[15];
-    quickSort(pro, 0, n);
 }
 
 void bubbleSort(P pro[], int n){
@@ -86,19 +81,53 @@ void bubbleSort(P pro[], int n){
     }
 }
 
+
+void RoundRobin(P pro[], int n, int q){
+    int que[15];
+    int count = n;
+
+    pro[0].sta = pro[0].arr;
+    time = pro[0].arr;
+    if (pro[0].bur > q){
+        pro[0].tat += q;
+        pro[0].bur -= q;
+        time += q;
+    }
+    else{
+        pro[0].tat += pro[0].bur;
+        time += pro[0].bur;
+        pro[0].fin = pro[0].bur;
+        pro[0].bur = 0;
+        pro[0].wt
+    }
+}
+
 void Output(P pro[], int n){
-    cout << "STT\tArrival time\tBurst time\tStart time\tTurnaround time\tFinish time\tEnd time\n";
+    cout << "STT\tArrival time\tBurst time\tStart time\tTurnaround time\tWaiting time\tFinish time\n";
     for (int i = 0; i < n; i++)
     {
-    cout << pro[i].stt<<"\t"<<pro[i].arr<<"\t"<<pro[i].bur<<"\t"<<pro[i].sta<<"\t"<<pro[i].att<<"\t"<<pro[i].fin<<"\t"<<pro[i].end<<endl;
+    cout << pro[i].stt<<"\t"<<pro[i].arr<<"\t\t"<<pro[i].bur<<"\t\t"<<pro[i].sta<<"\t\t"<<pro[i].tat<<"\t\t"<<pro[i].wt<<"\t\t"<<pro[i].fin<<endl;
+    }
+}
+
+void CopyPtoT(P pro[], P temp[], int n){
+    for (int i = 0; i < n; i++){
+        temp[i].stt = pro[i].stt;
+        temp[i].arr = pro[i].arr;
+        temp[i].bur = pro[i].bur;
+    }
+}
+
+void CopyPtoT(P pro[], P temp[], int n){
+    for (int i = 0; i < n; i++){
+        pro[i].tat = temp[i].tat;
+        pro[i].fin = temp[i].fin;
+        pro[i].sta = temp[i].sta;
+        pro[i].wt = temp[i].wt;
     }
 }
 
 int main() {
-	ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
-
     cout << "Nhap vao so luong tien trinh: ";
     cin >> n;
 
@@ -106,9 +135,17 @@ int main() {
     cin >> q;
 
     Input(pro, n);
-    //RoundRobin(pro, n, q);
+
+    quickSort(pro, 0, n);
+
+    P temp[15];
+    CopyPtoT(pro, temp, n);
+
+    RoundRobin(temp, n, q);
+
+    CopyTtoP(pro, temp, n)
     
-    //bubbleSort(pro, n);
+    bubbleSort(pro, n);
 
     Output(pro, n);
 
