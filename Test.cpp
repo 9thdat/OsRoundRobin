@@ -22,21 +22,28 @@ void swap(int &a, int &b){
     b = t;
 }
 
-void bubbleSort(P pro[], int n)
-{
-    int i, j;
-    bool haveSwap = false;
-    for (i = 0; i < n-1; i++){
-        haveSwap = false;
-        for (j = 0; j < n-i-1; j++){
-            if (pro[j].arr > pro[j+1].arr){
-                swap(pro[j], pro[j+1]);
-                haveSwap = true;
-            }
-        }
-        if(haveSwap == false){
-            break;
-        }
+int partition (P pro[], int low, int high){
+    int pivot = pro[high].arr;   
+    int left = low;
+    int right = high - 1;
+    while(true){
+        while(left <= right && pro[left].arr < pivot) left++;
+        while(right >= left && pro[right].arr > pivot) right--;
+        if (left >= right) break;
+        swap(pro[left], pro[right]);
+        left++;
+        right--;
+    }
+    swap(pro[left], pro[high]);
+    return left;
+}
+
+void quickSort(P pro[], int low, int high){
+    if (low < high)
+    {
+        int pi = partition(pro, low, high);
+        quickSort(pro, low, pi - 1);
+        quickSort(pro, pi + 1, high);
     }
 }
 
@@ -57,51 +64,52 @@ void SelectionSort(P A[], int n)
     int min;
     for (int i = 0; i < n - 1; i++)
     {
-        min = i; 
+        min = i; // t?m th?i xem A[i] là nh? nh?t
+        // Tìm ph?n t? nh? nh?t trong do?n t? A[i] d?n A[n - 1]
         for (int j = i + 1; j < n; j++)
-            if (A[j].stt < A[min].stt) 
-                min = j; 
-        if (min != i)
+            if (A[j].stt < A[min].stt) // A[j] mà nh? hon A[min] thì A[j] là nh? nh?t
+                min = j; // luu l?i v? trí A[min] m?i v?a tìm du?c
+        if (min != i) // n?u nhu A[min] không ph?i là A[i] ban d?u thì d?i ch?
             swap(A[i], A[min]);
     }
 }
 
-void RoundRobin(P temp[], int n, int q){
+void RoundRobin(P pro[], int n, int q){
     P que[15]; //Hang doi cap CPU
     P suc[15]; //Cac tien trinh da hoan thanh
     int countS = 0; //Bien dem cac tien trinh da hoan thanh
     int countQ = 0; //Bien dem cac tien trinh co trong hang doi
 
     //Xu ly tien trinh thu nhat pro[0]
-    temp[0].sta = temp[0].arr;
-    time = temp[0].arr;
+    pro[0].sta = pro[0].arr;
+    time = pro[0].arr;
 
-    if (temp[0].bur > q){
-        temp[0].tat += q;
-        temp[0].bur -= q;
+    if (pro[0].bur > q){
+        pro[0].tat += q;
+        pro[0].bur -= q;
         time += q;
     }
     else{
-        temp[0].tat += temp[0].bur;
-        time += temp[0].bur;
-        temp[0].fin = temp[0].bur;
-        temp[0].bur = 0;
-        temp[0].wt = 0;
-        suc[0] = temp[0];
+        pro[0].tat += pro[0].bur;
+        time += pro[0].bur;
+        pro[0].fin = pro[0].bur;
+        pro[0].bur = 0;
+        pro[0].wt = 0;
+        suc[0] = pro[0];
         countS++;
         for(int i = 0; i < n - 1; i++){
-            temp[i] = temp[i + 1];
+            pro[i] = pro[i + 1];
         }
         n--;
     }
 
     for (int i = 1; i < n; i++){ //Kiem tra cac tien trinh co phu hop de vao hang doi khong
-        if (temp[i].arr <= q)
+        if (pro[i].arr <= q)
         {
-            que[countQ] = temp[i];
+            que[countQ] = pro[i];
             for(int m = i; m < n - 1; m++)
             {
-                temp[m] = temp[m + 1];
+                pro[m] = pro[m + 1];
             }
             i--;
             n--;
@@ -113,7 +121,7 @@ void RoundRobin(P temp[], int n, int q){
     
     if (countQ != 0){ //Neu co tien trinh trong hang doi
     //Them Waiting time va Turnaround time cho cac tien trinh trong hang cho
-        if (temp[0].bur != 0){ 
+        if (pro[0].bur != 0){ 
             for (int i = 1; i < countQ; i++){ 
                 que[i].wt = q - que[i].arr;
                 que[i].tat = q - que[i].arr;
@@ -122,14 +130,14 @@ void RoundRobin(P temp[], int n, int q){
         }
         else
             for (int i = 1; i < countQ; i++){ 
-                que[i].wt = temp[i].bur - que[i].arr;
-                que[i].tat = temp[i].bur - que[i].arr;
+                que[i].wt = pro[i].bur - que[i].arr;
+                que[i].tat = pro[i].bur - que[i].arr;
             }
     }
 
-    if (countS == 0) // Kiem tra xem tien trinh temp[0] co duoc vao hang doi khong
+    if (countS == 0) // Kiem tra xem tien trinh pro[0] co duoc vao hang doi khong
         {
-            que[countQ] = temp[0]; 
+            que[countQ] = pro[0]; 
             countQ++;
         }
     
@@ -144,9 +152,9 @@ void RoundRobin(P temp[], int n, int q){
         }
         else{
             que[0].tat += que[0].bur;
-            time += temp[0].bur;
+            time += pro[0].bur;
             que[0].fin = que[0].tat + que[0].sta;
-            temp[0].bur = 0;
+            pro[0].bur = 0;
             suc[countS] = que[0];
             countS++;
             for(int i = 0; i < countQ - 1; i++){
@@ -156,10 +164,10 @@ void RoundRobin(P temp[], int n, int q){
         }
 
         for (int i = 0; i < n; i++){ //Kiem tra tien trinh co phu hop de vao hang doi khong
-            if (temp[i].arr <= q){
-                que[countQ] = temp[i];
+            if (pro[i].arr <= q){
+                que[countQ] = pro[i];
                 for(int m = i; m < n - 1; m++){
-                    temp[m] = temp[m + 1];
+                    pro[m] = pro[m + 1];
                 }
                 n--;
                 i--;
@@ -195,8 +203,8 @@ void RoundRobin(P temp[], int n, int q){
         }
     }
 
-    for (int i = 0; i < count; i++){ //Copy thong tin cac tien trinh da hoan thanh tu mang suc qua mang temp
-        temp[i] = suc[i];
+    for (int i = 0; i < count; i++){ //Copy thong tin cac tien trinh da hoan thanh tu mang suc qua mang pro
+        pro[i] = suc[i];
     }
 }
 
@@ -210,7 +218,9 @@ void Output(P pro[], int n){
 
 void CopyPtoT(P pro[], P temp[], int n){
     for (int i = 0; i < n; i++){
-        temp[i] = pro[i];
+        temp[i].stt = pro[i].stt;
+        temp[i].arr = pro[i].arr;
+        temp[i].bur = pro[i].bur;
     }
 }
 
@@ -232,7 +242,7 @@ int main() {
 
     Input(pro, n);
 
-    bubbleSort(pro, n);
+    quickSort(pro, 0, n);
 
     P temp[15];
     CopyPtoT(pro, temp, n);
@@ -247,3 +257,4 @@ int main() {
 
     return 0;
 }
+
