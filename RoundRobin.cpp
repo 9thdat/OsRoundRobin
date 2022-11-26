@@ -15,6 +15,7 @@ struct Process{
 int n, q; //n la so luong tien trinh, q la quantum time
 P pro[15]; // Mang chua thong tin cac tien trinh
 int time = 0; // time chua thong tin thoi gian thuc
+bool check = 0; //Kiem tra xem tien trinh co can CPU hon 1 lan hay khong
 
 void swap(int &a, int &b){
     int t = a;
@@ -71,6 +72,7 @@ void RoundRobin(P temp[], int n, int q){
     P suc[15]; //Cac tien trinh da hoan thanh
     int countS = 0; //Bien dem cac tien trinh da hoan thanh
     int countQ = 0; //Bien dem cac tien trinh co trong hang doi
+    int count = n; //Bien dem cac tien trinh can xu ly
 
     //Xu ly tien trinh thu nhat pro[0]
     temp[0].sta = temp[0].arr;
@@ -89,41 +91,48 @@ void RoundRobin(P temp[], int n, int q){
         temp[0].wt = 0;
         suc[0] = temp[0];
         countS++;
-        for(int i = 0; i < n - 1; i++){
+        for(int i = 0; i < n; i++){
             temp[i] = temp[i + 1];
         }
         n--;
     }
 
-    for (int i = 1; i < n; i++){ //Kiem tra cac tien trinh co phu hop de vao hang doi khong
-        if (temp[i].arr <= q)
-        {
-            que[countQ] = temp[i];
-            for(int m = i; m < n - 1; m++)
+    if (countS == 0){//Kiem tra cac tien trinh co phu hop de vao hang doi khong
+        for (int i = 1; i < n; i++){ 
+            if (temp[i].arr <= time)
             {
-                temp[m] = temp[m + 1];
+                que[countQ] = temp[i];
+                for(int m = i; m < n - 1; m++)
+                {
+                    temp[m] = temp[m + 1];
+                }
+                i--;
+                n--;
+                countQ++;
             }
-            i--;
-            n--;
-            countQ++;
+        }
+    }
+    else{
+        for (int i = 0; i < n; i++){ 
+            if (temp[i].arr <= time)
+            {
+                que[countQ] = temp[i];
+                for(int m = i; m < n - 1; m++)
+                {
+                    temp[m] = temp[m + 1];
+                }
+                i--;
+                n--;
+                countQ++;
+            }
         }
     }
     
-    int count = n; //Bien dem cac tien trinh can xu ly
-    
     if (countQ != 0){ //Neu co tien trinh trong hang doi
-    //Them Waiting time va Turnaround time cho cac tien trinh trong hang cho
-        if (temp[0].bur != 0){ 
-            for (int i = 1; i < countQ; i++){ 
-                que[i].wt = q - que[i].arr;
-                que[i].tat = q - que[i].arr;
-            }
-            
-        }
-        else
-            for (int i = 1; i < countQ; i++){ 
-                que[i].wt = temp[i].bur - que[i].arr;
-                que[i].tat = temp[i].bur - que[i].arr;
+            //Them Waiting time va Turnaround time cho cac tien trinh trong hang cho
+            for (int i = 0; i < countQ; i++){ 
+                que[i].wt = time - que[i].arr;
+                que[i].tat = que[i].wt;
             }
     }
 
@@ -134,29 +143,33 @@ void RoundRobin(P temp[], int n, int q){
         }
     
     while(countS != count){     
-        //Xu ly tien trinh o dau hang cho  
-        que[0].sta = time;
+        //Xu ly tien trinh o dau hang cho
+        if (!check){  
+            que[0].sta = time;
+        }
 
         if (que[0].bur > q){
             que[0].tat += q;
             que[0].bur -= q;
             time += q;
+            check = 1;
         }
         else{
             que[0].tat += que[0].bur;
-            time += temp[0].bur;
+            time += que[0].bur;
             que[0].fin = que[0].tat + que[0].sta;
-            temp[0].bur = 0;
+            que[0].bur = 0;
             suc[countS] = que[0];
             countS++;
             for(int i = 0; i < countQ - 1; i++){
                 que[i] = que[i + 1];
             }
             countQ--;
+            check = 0;
         }
 
         for (int i = 0; i < n; i++){ //Kiem tra tien trinh co phu hop de vao hang doi khong
-            if (temp[i].arr <= q){
+            if (temp[i].arr <= time){
                 que[countQ] = temp[i];
                 for(int m = i; m < n - 1; m++){
                     temp[m] = temp[m + 1];
@@ -167,20 +180,24 @@ void RoundRobin(P temp[], int n, int q){
             } 
         }
 
-        if (que[0].bur != 0){ //Them Waiting time va Turnaround time cho cac tien trinh trong hang cho
+        if (check){ //Them Waiting time va Turnaround time cho cac tien trinh trong hang cho
             for (int i = 1; i < countQ; i++){ 
-                que[i].wt = q - que[i].arr;
-                que[i].tat = q - que[i].arr;
+                que[i].wt = time - que[i].arr;
+                if (que[i].sta != 0){
+                que[i].tat = time - que[i].arr;
+                }
             }
         }
         else{
-        for (int i = 1; i < countQ; i++){ 
+        for (int i = 0; i < countQ; i++){ 
             que[i].wt = que[0].bur - que[i].arr;
-            que[i].tat = que[0].bur - que[i].arr;
+            if (que[i].sta != 0){
+                que[i].tat = time - que[i].arr;
+            }
         }
         }
 
-        if (que[0].bur != 0){ // Kiem tra xem tien trinh vua duoc cap CPU co duoc dua ra sau hang doi khong
+        if (check){ // Kiem tra xem tien trinh vua duoc cap CPU co duoc dua ra sau hang doi khong
             que[countQ] = que[0];
             countQ++;
             for (int i = 0; i < countQ - 1; i++){
