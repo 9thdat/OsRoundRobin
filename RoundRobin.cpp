@@ -15,7 +15,6 @@ struct Process{
 int n, q; //n la so luong tien trinh, q la quantum time
 P pro[15]; // Mang chua thong tin cac tien trinh
 int time = 0; // time chua thong tin thoi gian thuc
-int stt[15]; // luu so thu tu cac tien trinh
 
 void swap(int &a, int &b){
     int t = a;
@@ -52,7 +51,6 @@ void Input(P pro[], int n){
     for (int i = 0; i < n; i++)
     {
         pro[i].stt = i + 1;
-        stt[i] = pro[i].stt;
         cout << "\nNhap vao tien trinh thu " << pro[i].stt << " : ";
         cout << "Nhap vao Arrival time: ";
         cin >> pro[i].arr;
@@ -108,9 +106,9 @@ int main() {
     cin >> q;
 
     Input(pro, n);
-    RoundRobin(pro, n, q);
+    //RoundRobin(pro, n, q);
     
-    bubbleSort(pro, n);
+    //bubbleSort(pro, n);
 
     Output(pro, n);
 
