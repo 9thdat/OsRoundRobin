@@ -15,7 +15,9 @@ struct Process{
 int n, q; //n la so luong tien trinh, q la quantum time
 P pro[15]; // Mang chua thong tin cac tien trinh
 int time = 0; // time chua thong tin thoi gian thuc
-bool check = 0; //Kiem tra xem tien trinh co can CPU hon 1 lan hay khong
+int tempB = 0; //Luu gia tri Burst time o lan cuoi cung tien trinh duoc cap CPU
+int countS = 0; //Bien dem cac tien trinh da hoan thanh
+int countQ = 0; //Bien dem cac tien trinh co trong hang doi
 
 void swap(int &a, int &b){
     int t = a;
@@ -41,6 +43,24 @@ void bubbleSort(P pro[], int n)
     }
 }
 
+void bubbleSortSTT(P pro[], int n)
+{
+    int i, j;
+    bool haveSwap = false;
+    for (i = 0; i < n-1; i++){
+        haveSwap = false;
+        for (j = 0; j < n-i-1; j++){
+            if (pro[j].stt > pro[j+1].stt){
+                swap(pro[j], pro[j+1]);
+                haveSwap = true;
+            }
+        }
+        if(haveSwap == false){
+            break;
+        }
+    }
+}
+
 void Input(P pro[], int n){
     for (int i = 0; i < n; i++)
     {
@@ -53,25 +73,9 @@ void Input(P pro[], int n){
     }
 }
 
-void SelectionSort(P A[], int n)
-{
-    int min;
-    for (int i = 0; i < n - 1; i++)
-    {
-        min = i; 
-        for (int j = i + 1; j < n; j++)
-            if (A[j].stt < A[min].stt) 
-                min = j; 
-        if (min != i)
-            swap(A[i], A[min]);
-    }
-}
-
 void RoundRobin(P temp[], int n, int q){
     P que[15]; //Hang doi cap CPU
     P suc[15]; //Cac tien trinh da hoan thanh
-    int countS = 0; //Bien dem cac tien trinh da hoan thanh
-    int countQ = 0; //Bien dem cac tien trinh co trong hang doi
     int count = n; //Bien dem cac tien trinh can xu ly
 
     //Xu ly tien trinh thu nhat pro[0]
@@ -121,7 +125,6 @@ void RoundRobin(P temp[], int n, int q){
                 {
                     temp[m] = temp[m + 1];
                 }
-                i--;
                 n--;
                 countQ++;
             }
@@ -129,10 +132,9 @@ void RoundRobin(P temp[], int n, int q){
     }
     
     if (countQ != 0){ //Neu co tien trinh trong hang doi
-            //Them Waiting time va Turnaround time cho cac tien trinh trong hang cho
+            //Them Waiting time cho cac tien trinh trong hang cho
             for (int i = 0; i < countQ; i++){ 
                 que[i].wt = time - que[i].arr;
-                que[i].tat = que[i].wt;
             }
     }
 
@@ -140,11 +142,19 @@ void RoundRobin(P temp[], int n, int q){
         {
             que[countQ] = temp[0]; 
             countQ++;
+            for(int i = 0; i < n; i++){
+                temp[i] = temp[i + 1];
         }
-    
+        n--;
+        }
+    //Xu ly trong Queue
     while(countS != count){     
         //Xu ly tien trinh o dau hang cho
-        if (!check){  
+        if (tempB <= q){
+            tempB = 0;
+        }
+
+        if (que[0].tat == 0){  
             que[0].sta = time;
         }
 
@@ -152,52 +162,52 @@ void RoundRobin(P temp[], int n, int q){
             que[0].tat += q;
             que[0].bur -= q;
             time += q;
-            check = 1;
+            tempB = q;
         }
         else{
-            que[0].tat += que[0].bur;
             time += que[0].bur;
-            que[0].fin = que[0].tat + que[0].sta;
+            que[0].fin = time;
+            que[0].tat = que[0].fin - que[0].arr;
+            tempB = que[0].bur;
             que[0].bur = 0;
             suc[countS] = que[0];
             countS++;
-            for(int i = 0; i < countQ - 1; i++){
-                que[i] = que[i + 1];
+        }
+
+        if (countS + countQ != count)
+            for (int i = 0; i < n; i++){ //Kiem tra tien trinh co phu hop de vao hang doi khong
+                if (temp[i].arr <= time){
+                    que[countQ] = temp[i];
+                    for(int m = i; m < n - 1; m++){
+                        temp[m] = temp[m + 1];
+                    }
+                    n--;
+                    countQ++;
+                } 
             }
-            countQ--;
-            check = 0;
-        }
 
-        for (int i = 0; i < n; i++){ //Kiem tra tien trinh co phu hop de vao hang doi khong
-            if (temp[i].arr <= time){
-                que[countQ] = temp[i];
-                for(int m = i; m < n - 1; m++){
-                    temp[m] = temp[m + 1];
+        if (tempB >= q){ //Them Waiting time cho cac tien trinh trong hang cho
+            for (int i = 1; i < countQ; i++){
+                if (que[i].tat != 0){
+                    que[i].wt += tempB; 
                 }
-                n--;
-                i--;
-                countQ++;
-            } 
-        }
-
-        if (check){ //Them Waiting time va Turnaround time cho cac tien trinh trong hang cho
-            for (int i = 1; i < countQ; i++){ 
-                que[i].wt = time - que[i].arr;
-                if (que[i].sta != 0){
-                que[i].tat = time - que[i].arr;
+                else{ 
+                    que[i].wt = time - que[i].arr;
                 }
             }
         }
         else{
-        for (int i = 0; i < countQ; i++){ 
-            que[i].wt = que[0].bur - que[i].arr;
-            if (que[i].sta != 0){
-                que[i].tat = time - que[i].arr;
-            }
+            for (int i = 0; i < countQ; i++){ 
+                if (que[i].tat != 0){
+                        que[i].wt += tempB; 
+                    }
+                    else{ 
+                        que[i].wt = time - que[i].arr;
+                    }
         }
         }
 
-        if (check){ // Kiem tra xem tien trinh vua duoc cap CPU co duoc dua ra sau hang doi khong
+        if (que[0].bur != 0){ // Kiem tra xem tien trinh vua duoc cap CPU co duoc dua ra sau hang doi khong
             que[countQ] = que[0];
             countQ++;
             for (int i = 0; i < countQ - 1; i++){
@@ -209,6 +219,7 @@ void RoundRobin(P temp[], int n, int q){
             for (int i = 0; i < countQ - 1; i++){
                 que[i] = que[i + 1];
             }
+            countQ--;
         }
     }
 
@@ -233,10 +244,7 @@ void CopyPtoT(P pro[], P temp[], int n){
 
 void CopyTtoP(P pro[], P temp[], int n){
     for (int i = 0; i < n; i++){
-        pro[i].tat = temp[i].tat;
-        pro[i].fin = temp[i].fin;
-        pro[i].sta = temp[i].sta;
-        pro[i].wt = temp[i].wt;
+        temp[i].bur = pro[i].bur;
     }
 }
 
@@ -256,11 +264,11 @@ int main() {
 
     RoundRobin(temp, n, q);
 
-    CopyTtoP(pro, temp, n);
-    
-    SelectionSort(pro, n);
+    bubbleSortSTT(temp, n);
 
-    Output(pro, n);
+    CopyTtoP(pro, temp, n);
+
+    Output(temp, n);
 
     return 0;
 }
