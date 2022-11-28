@@ -4,18 +4,18 @@ using namespace std;
 
 struct Process{
     int stt = 0; // So thu tu cac tien trinh
-    int arr = 0; // Arrival realtime
-    int bur = 0; // Burst realtime
-    int sta = 0; // Start realtime
-    int tat = 0; // Turnaround realtime
+    int arr = 0; // Arrival time
+    int bur = 0; // Burst time
+    int sta = 0; // Start time
+    int tat = 0; // Turnaround time
     int wt = 0;
-    int fin = 0; // Finish realtime
+    int fin = 0; // Finish time
 }typedef P;
 
-int n, q; //n la so luong tien trinh, q la quantum realtime
+int n, q; //n la so luong tien trinh, q la quantum time
 P pro[15]; // Mang chua thong tin cac tien trinh
 int realtime = 0; // realtime chua thong tin thoi gian thuc
-int tempB = 0; //Luu gia tri Burst realtime o lan cuoi cung tien trinh duoc cap CPU
+int tempB = 0; //Luu gia tri Burst time o lan cuoi cung tien trinh duoc cap CPU
 int countS = 0; //Bien dem cac tien trinh da hoan thanh
 int countQ = 0; //Bien dem cac tien trinh co trong hang doi
 
@@ -132,7 +132,7 @@ void RoundRobin(P temp[], int n, int q){
     }
     
     if (countQ != 0){ //Neu co tien trinh trong hang doi
-            //Them Waiting realtime cho cac tien trinh trong hang cho
+            //Them Waiting time cho cac tien trinh trong hang cho
             for (int i = 0; i < countQ; i++){ 
                 que[i].wt = realtime - que[i].arr;
             }
@@ -186,7 +186,7 @@ void RoundRobin(P temp[], int n, int q){
                 } 
             }
 
-        if (tempB >= q){ //Them Waiting realtime cho cac tien trinh trong hang cho
+        if (tempB >= q){ //Them Waiting time cho cac tien trinh trong hang cho
             for (int i = 1; i < countQ; i++){
                 if (que[i].tat != 0){
                     que[i].wt += tempB; 
