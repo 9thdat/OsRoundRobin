@@ -4,18 +4,18 @@ using namespace std;
 
 struct Process{
     int stt = 0; // So thu tu cac tien trinh
-    int arr = 0; // Arrival time
-    int bur = 0; // Burst time
-    int sta = 0; // Start time
-    int tat = 0; // Turnaround time
+    int arr = 0; // Arrival realtime
+    int bur = 0; // Burst realtime
+    int sta = 0; // Start realtime
+    int tat = 0; // Turnaround realtime
     int wt = 0;
-    int fin = 0; // Finish time
+    int fin = 0; // Finish realtime
 }typedef P;
 
-int n, q; //n la so luong tien trinh, q la quantum time
+int n, q; //n la so luong tien trinh, q la quantum realtime
 P pro[15]; // Mang chua thong tin cac tien trinh
-int time = 0; // time chua thong tin thoi gian thuc
-int tempB = 0; //Luu gia tri Burst time o lan cuoi cung tien trinh duoc cap CPU
+int realtime = 0; // realtime chua thong tin thoi gian thuc
+int tempB = 0; //Luu gia tri Burst realtime o lan cuoi cung tien trinh duoc cap CPU
 int countS = 0; //Bien dem cac tien trinh da hoan thanh
 int countQ = 0; //Bien dem cac tien trinh co trong hang doi
 
@@ -66,9 +66,9 @@ void Input(P pro[], int n){
     {
         pro[i].stt = i + 1;
         cout << "Nhap thong tin cua tien trinh thu " << pro[i].stt;
-        cout << "\n\tNhap vao Arrival time: ";
+        cout << "\n\tNhap vao Arrival realtime: ";
         cin >> pro[i].arr;
-        cout << "\tNhap vao Burst time: ";
+        cout << "\tNhap vao Burst realtime: ";
         cin >> pro[i].bur;
     }
 }
@@ -80,16 +80,16 @@ void RoundRobin(P temp[], int n, int q){
 
     //Xu ly tien trinh thu nhat pro[0]
     temp[0].sta = temp[0].arr;
-    time = temp[0].arr;
+    realtime = temp[0].arr;
 
     if (temp[0].bur > q){
         temp[0].tat += q;
         temp[0].bur -= q;
-        time += q;
+        realtime += q;
     }
     else{
         temp[0].tat += temp[0].bur;
-        time += temp[0].bur;
+        realtime += temp[0].bur;
         temp[0].fin = temp[0].bur;
         temp[0].bur = 0;
         temp[0].wt = 0;
@@ -103,7 +103,7 @@ void RoundRobin(P temp[], int n, int q){
 
     if (countS == 0){//Kiem tra cac tien trinh co phu hop de vao hang doi khong
         for (int i = 1; i < n; i++){ 
-            if (temp[i].arr <= time)
+            if (temp[i].arr <= realtime)
             {
                 que[countQ] = temp[i];
                 for(int m = i; m < n - 1; m++)
@@ -118,7 +118,7 @@ void RoundRobin(P temp[], int n, int q){
     }
     else{
         for (int i = 0; i < n; i++){ 
-            if (temp[i].arr <= time)
+            if (temp[i].arr <= realtime)
             {
                 que[countQ] = temp[i];
                 for(int m = i; m < n - 1; m++)
@@ -132,9 +132,9 @@ void RoundRobin(P temp[], int n, int q){
     }
     
     if (countQ != 0){ //Neu co tien trinh trong hang doi
-            //Them Waiting time cho cac tien trinh trong hang cho
+            //Them Waiting realtime cho cac tien trinh trong hang cho
             for (int i = 0; i < countQ; i++){ 
-                que[i].wt = time - que[i].arr;
+                que[i].wt = realtime - que[i].arr;
             }
     }
 
@@ -155,18 +155,18 @@ void RoundRobin(P temp[], int n, int q){
         }
 
         if (que[0].tat == 0){  
-            que[0].sta = time;
+            que[0].sta = realtime;
         }
 
         if (que[0].bur > q){
             que[0].tat += q;
             que[0].bur -= q;
-            time += q;
+            realtime += q;
             tempB = q;
         }
         else{
-            time += que[0].bur;
-            que[0].fin = time;
+            realtime += que[0].bur;
+            que[0].fin = realtime;
             que[0].tat = que[0].fin - que[0].arr;
             tempB = que[0].bur;
             que[0].bur = 0;
@@ -176,7 +176,7 @@ void RoundRobin(P temp[], int n, int q){
 
         if (countS + countQ != count)
             for (int i = 0; i < n; i++){ //Kiem tra tien trinh co phu hop de vao hang doi khong
-                if (temp[i].arr <= time){
+                if (temp[i].arr <= realtime){
                     que[countQ] = temp[i];
                     for(int m = i; m < n - 1; m++){
                         temp[m] = temp[m + 1];
@@ -186,13 +186,13 @@ void RoundRobin(P temp[], int n, int q){
                 } 
             }
 
-        if (tempB >= q){ //Them Waiting time cho cac tien trinh trong hang cho
+        if (tempB >= q){ //Them Waiting realtime cho cac tien trinh trong hang cho
             for (int i = 1; i < countQ; i++){
                 if (que[i].tat != 0){
                     que[i].wt += tempB; 
                 }
                 else{ 
-                    que[i].wt = time - que[i].arr;
+                    que[i].wt = realtime - que[i].arr;
                 }
             }
         }
@@ -202,7 +202,7 @@ void RoundRobin(P temp[], int n, int q){
                         que[i].wt += tempB; 
                     }
                     else{ 
-                        que[i].wt = time - que[i].arr;
+                        que[i].wt = realtime - que[i].arr;
                     }
         }
         }
@@ -229,7 +229,7 @@ void RoundRobin(P temp[], int n, int q){
 }
 
 void Output(P pro[], int n){
-    cout << "STT\tArrival time\tBurst time\tStart time\tTurnaround time\tWaiting time\tFinish time\n";
+    cout << "STT\tArrival realtime\tBurst realtime\tStart realtime\tTurnaround realtime\tWaiting realtime\tFinish realtime\n";
     for (int i = 0; i < n; i++)
     {
     cout << pro[i].stt<<"\t"<<pro[i].arr<<"\t\t"<<pro[i].bur<<"\t\t"<<pro[i].sta<<"\t\t"<<pro[i].tat<<"\t\t"<<pro[i].wt<<"\t\t"<<pro[i].fin<<endl;
@@ -252,7 +252,7 @@ int main() {
     cout << "Nhap vao so luong tien trinh: ";
     cin >> n;
 
-    cout << "Nhap vao quantum time: ";
+    cout << "Nhap vao quantum realtime: ";
     cin >> q;
 
     Input(pro, n);
