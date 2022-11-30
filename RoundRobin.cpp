@@ -66,9 +66,9 @@ void Input(P pro[], int n){
     {
         pro[i].stt = i + 1;
         cout << "Nhap thong tin cua tien trinh thu " << pro[i].stt;
-        cout << "\n\tNhap vao Arrival realtime: ";
+        cout << "\n\tNhap vao Arrival time: ";
         cin >> pro[i].arr;
-        cout << "\tNhap vao Burst realtime: ";
+        cout << "\tNhap vao Burst time: ";
         cin >> pro[i].bur;
     }
 }
@@ -229,7 +229,7 @@ void RoundRobin(P temp[], int n, int q){
 }
 
 void Output(P pro[], int n){
-    cout << "STT\tArrival realtime\tBurst realtime\tStart realtime\tTurnaround realtime\tWaiting realtime\tFinish realtime\n";
+    cout << "STT\tArrival time\tBurst time\tStart time\tTurnaround time\tWaiting time\tFinish time\n";
     for (int i = 0; i < n; i++)
     {
     cout << pro[i].stt<<"\t"<<pro[i].arr<<"\t\t"<<pro[i].bur<<"\t\t"<<pro[i].sta<<"\t\t"<<pro[i].tat<<"\t\t"<<pro[i].wt<<"\t\t"<<pro[i].fin<<endl;
@@ -252,7 +252,7 @@ int main() {
     cout << "Nhap vao so luong tien trinh: ";
     cin >> n;
 
-    cout << "Nhap vao quantum realtime: ";
+    cout << "Nhap vao quantum time: ";
     cin >> q;
 
     Input(pro, n);
