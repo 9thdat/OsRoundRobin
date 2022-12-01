@@ -8,7 +8,7 @@ struct Process{
     int bur = 0; // Burst time
     int sta = 0; // Start time
     int tat = 0; // Turnaround time
-    int wt = 0;
+    int wt = 0; // Waiting time
     int fin = 0; // Finish time
 }typedef P;
 
