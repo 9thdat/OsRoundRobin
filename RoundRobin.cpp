@@ -1,11 +1,11 @@
 /*#######################################
 # University of Information Technology	#
-# IT007 Operating System		        #
-# Nhom Ubuntu:				            #
-# 1. Le Xuan Quynh, 21520430		    #
-# 2. Truong Gia Man, 21521115		    #
-# 3. Nguyen Thanh Dat, 21521938		    #
-# File: round-robin.cpp			        #
+# IT007 Operating System		#
+# Nhom Ubuntu:				#
+# 1. Le Xuan Quynh, 21520430		#
+# 2. Truong Gia Man, 21521115		#
+# 3. Nguyen Thanh Dat, 21521938		#
+# File: round-robin.cpp			#
 #######################################*/
 
 #include <iostream>
