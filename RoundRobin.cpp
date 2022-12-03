@@ -9,6 +9,7 @@
 #######################################*/
 
 #include <iostream>
+#include <iomanip>
 
 using namespace std;
 
@@ -238,12 +239,27 @@ void RoundRobin(P temp[], int n, int q){
     }
 }
 
+void OutputAWTandATAT(P pro[], int n){
+    float AWT = 0;
+    float ATAT = 0;
+    for (int i = 0; i < n; i++){
+        AWT += pro[i].wt;
+        ATAT += pro[i].tat;
+    }
+    AWT /= n;
+    ATAT /= n;
+    cout << setprecision(1) << fixed;
+    cout << "Average Waiting time: " << AWT;
+    cout << "\nAverage Turnaround time: " << ATAT;
+}
+
 void Output(P pro[], int n){
-    cout << "STT\tArrival time\tBurst time\tStart time\tTurnaround time\tWaiting time\tFinish time\n";
+    cout << "ID\tArrival time\tBurst time\tStart time\tTurnaround time\tWaiting time\tFinish time\n";
     for (int i = 0; i < n; i++)
     {
     cout << pro[i].stt<<"\t"<<pro[i].arr<<"\t\t"<<pro[i].bur<<"\t\t"<<pro[i].sta<<"\t\t"<<pro[i].tat<<"\t\t"<<pro[i].wt<<"\t\t"<<pro[i].fin<<endl;
     }
+    OutputAWTandATAT(pro, n);
 }
 
 void CopyPtoT(P pro[], P temp[], int n){
