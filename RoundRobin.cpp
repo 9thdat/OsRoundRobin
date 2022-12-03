@@ -65,10 +65,10 @@ void Input(P pro[], int n){
     for (int i = 0; i < n; i++)
     {
         pro[i].stt = i + 1;
-        cout << "Nhap thong tin cua tien trinh thu " << pro[i].stt;
-        cout << "\n\tNhap vao Arrival time: ";
+        cout << "Enter Process " << pro[i].stt;
+        cout << "\n\tEnter the Arrival time: ";
         cin >> pro[i].arr;
-        cout << "\tNhap vao Burst time: ";
+        cout << "\tEnter the Burst time: ";
         cin >> pro[i].bur;
     }
 }
@@ -249,10 +249,10 @@ void CopyTtoP(P pro[], P temp[], int n){
 }
 
 int main() {
-    cout << "Nhap vao so luong tien trinh: ";
+    cout << "Enter total number of process: ";
     cin >> n;
 
-    cout << "Nhap vao quantum time: ";
+    cout << "Enter the quantum time: ";
     cin >> q;
 
     Input(pro, n);
