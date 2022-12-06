@@ -21,6 +21,7 @@ struct Process{
     int tat = 0; // Turnaround time
     int wt = 0; // Waiting time
     int fin = 0; // Finish time
+    int res = 0; //Response Time
 }typedef P;
 
 int n, q; //n la so luong tien trinh, q la quantum time
@@ -104,6 +105,7 @@ void RoundRobin(P temp[], int n, int q){
         temp[0].fin = temp[0].bur;
         temp[0].bur = 0;
         temp[0].wt = 0;
+        temp[0].res = 0;
         suc[0] = temp[0];
         countS++;
         for(int i = 0; i < n; i++){
@@ -181,6 +183,7 @@ void RoundRobin(P temp[], int n, int q){
             que[0].tat = que[0].fin - que[0].arr;
             tempB = que[0].bur;
             que[0].bur = 0;
+            que[0].res = que[0].sta - que[0].arr;
             suc[countS] = que[0];
             countS++;
         }
@@ -243,22 +246,25 @@ void RoundRobin(P temp[], int n, int q){
 void OutputAWTandATAT(P pro[], int n){
     float AWT = 0;
     float ATAT = 0;
+    float ART = 0;
     for (int i = 0; i < n; i++){
         AWT += pro[i].wt;
         ATAT += pro[i].tat;
+        ART += pro[i].res;
     }
     AWT /= n;
     ATAT /= n;
+    ART /= n;
     cout << setprecision(1) << fixed;
     cout << "Average Waiting time: " << AWT;
     cout << "\nAverage Turnaround time: " << ATAT;
+    cout << "\nAverage Response time: " << ART << endl;
 }
 
 void Output(P pro[], int n){
-    cout << "ID\tArrival time\tBurst time\tStart time\tTurnaround time\tWaiting time\tFinish time\n";
-    for (int i = 0; i < n; i++)
-    {
-    cout << pro[i].stt<<"\t"<<pro[i].arr<<"\t\t"<<pro[i].bur<<"\t\t"<<pro[i].sta<<"\t\t"<<pro[i].tat<<"\t\t"<<pro[i].wt<<"\t\t"<<pro[i].fin<<endl;
+    cout << "ID\tArrival time\tBurst time\tStart time\tTurnaround time\tWaiting time\tResponse time\tFinish time\n";
+    for (int i = 0; i < n; i++){
+    cout << pro[i].stt<<"\t"<<pro[i].arr<<"\t\t"<<pro[i].bur<<"\t\t"<<pro[i].sta<<"\t\t"<<pro[i].tat<<"\t\t"<<pro[i].wt<<"\t\t"<<pro[i].res<<"\t\t"<<pro[i].fin<<endl;
     }
     OutputAWTandATAT(pro, n);
 }
@@ -276,7 +282,9 @@ void CopyTtoP(P pro[], P temp[], int n){
 }
 
 int main() {
-    cout << "Enter total number of process: ";
+    cout << "\nNhom Ubuntu - Lop1 \n1. Le Xuan Quynh, 21520430 \n2. Truong Gia Man, 21521115 \n3. Nguyen Thanh Dat, 21521938\n";
+    
+    cout << "\nEnter total number of process: ";
     cin >> n;
 
     cout << "Enter the quantum time: ";
