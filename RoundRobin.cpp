@@ -138,6 +138,7 @@ void RoundRobin(P temp[], int n, int q){
                 {
                     temp[m] = temp[m + 1];
                 }
+                i--;
                 n--;
                 countQ++;
             }
